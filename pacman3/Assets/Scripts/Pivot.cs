@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Pivot : MonoBehaviour
 {
-    public PacmanController pacman;
+    public Pacman pacman;
 
     void Update()
     {

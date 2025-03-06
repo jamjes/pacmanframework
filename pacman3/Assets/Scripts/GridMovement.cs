@@ -1,11 +1,11 @@
 using UnityEngine;
 
-public class CharacterMovement
+public class GridMovement
 {
     private float elapsedTime;
     private float duration;
 
-    public CharacterMovement(float duration) {
+    public GridMovement(float duration) {
         this.elapsedTime = 0;
         this.duration = duration;
     }

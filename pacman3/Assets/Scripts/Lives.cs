@@ -1,28 +1,31 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.SocialPlatforms;
+using UnityEngine.UI;
 
 public class Lives : MonoBehaviour
 {
-    TextMeshProUGUI livesLabel;
-    int lives = 3;
+    public Image[] lives;
+    int pointer;
+    public GameObject gameOverText;
 
-    private void Awake() {
-        livesLabel = GetComponent<TextMeshProUGUI>();
+    private void Start() {
+        pointer = lives.Length;
+        gameOverText.SetActive(false);
     }
 
     private void OnEnable() {
-        Player.OnPlayerDeath += Decrement;
+        Pacman.OnPlayerDeath += Decrement;
     }
 
     private void OnDisable() {
-        Player.OnPlayerDeath -= Decrement;
+        Pacman.OnPlayerDeath -= Decrement;
     }
 
     private void Decrement() {
-        lives--;
-        livesLabel.text = lives.ToString();
+        if (pointer > 0) {
+            pointer--;
+            lives[pointer].enabled = false;
+        } else {
+            gameOverText.SetActive(true);
+        }
     }
 }
