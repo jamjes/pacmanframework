@@ -1,8 +1,5 @@
-using JetBrains.Annotations;
 using System.Collections;
-using System.Transactions;
 using UnityEngine;
-using UnityEngine.InputSystem.LowLevel;
 
 public class Pacman : MonoBehaviour
 {
@@ -112,7 +109,6 @@ public class Pacman : MonoBehaviour
             UpdateScore(hit.collider.tag);
             Destroy(hit.collider.gameObject);
             if (totalPellets == 0) {
-                Debug.Log("Game Win");
                 run = false;
                 if (OnPlayerWin != null) { 
                     OnPlayerWin();
@@ -122,8 +118,7 @@ public class Pacman : MonoBehaviour
             Death();
         } else if (hit.collider.tag == "Teleport") {
             transform.position = hit.collider.GetComponent<Teleport>().TeleportPoint;
-            startPosition = transform.position;
-            targetPosition = startPosition + currentDirection;
+            isMoving = false;
         }
     }
 
