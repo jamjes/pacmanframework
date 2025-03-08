@@ -14,13 +14,15 @@ public class Pacman : MonoBehaviour
     private GridMovement movement;
     public LayerMask wallLayer;
     private Vector2 startPosition, targetPosition;
-    private bool isMoving;
+    private bool? isMoving = false;
     public delegate void UIEvent(Pacman self);
     public static event UIEvent OnScoreUpdate;
     public delegate void PlayerEvent();
     public static event PlayerEvent OnPowerPelletEat;
     public static event PlayerEvent OnPlayerDeath;
+    public static event PlayerEvent OnPlayerWin;
     private bool run;
+    private int totalPellets;
 
     public enum State {
         Chase,
@@ -34,6 +36,9 @@ public class Pacman : MonoBehaviour
     }
 
     private void Start() {
+        int pellets = GameObject.FindGameObjectsWithTag("Pellet").Length;
+        int powerPellets = GameObject.FindGameObjectsWithTag("Power Pellet").Length;
+        totalPellets = pellets + powerPellets;
         TargetDirection = Vector2.right;
         Score = 0;
         Lives = 3;
@@ -57,7 +62,7 @@ public class Pacman : MonoBehaviour
                 currentDirection = direction;
                 isMoving = true;
             }
-        } else {
+        } else if (isMoving == true){
             isMoving = !movement.MoveTo(transform, startPosition, targetPosition);
         }
     }
@@ -103,10 +108,22 @@ public class Pacman : MonoBehaviour
         }
         
         if ((hit.collider.tag == "Pellet" || hit.collider.tag == "Power Pellet")) {
+            totalPellets--;
             UpdateScore(hit.collider.tag);
             Destroy(hit.collider.gameObject);
+            if (totalPellets == 0) {
+                Debug.Log("Game Win");
+                run = false;
+                if (OnPlayerWin != null) { 
+                    OnPlayerWin();
+                }
+            }
         } else if (hit.collider.tag == "Ghost") {
             Death();
+        } else if (hit.collider.tag == "Teleport") {
+            transform.position = hit.collider.GetComponent<Teleport>().TeleportPoint;
+            startPosition = transform.position;
+            targetPosition = startPosition + currentDirection;
         }
     }
 
