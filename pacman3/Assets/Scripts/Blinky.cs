@@ -1,16 +1,18 @@
 using System.Collections;
 using UnityEngine;
+using static UnityEngine.CullingGroup;
 
 public class Blinky : MonoBehaviour
 {
     private Pathfinding pathfinding;
     public LayerMask wallLayer;
-    public Vector2 currentDirection;
+    private Vector2 currentDirection;
     private GameObject pacman;
     private bool? isMoving = false;
     private GridMovement movement;
     public float duration;
-    private Vector2 startPosition, endPosition;
+    private Vector2 startPosition;
+    public Vector2 endPosition;
     private bool run;
     private Vector2 spawnPosition;
     public Vector2 homePosition;
@@ -32,12 +34,14 @@ public class Blinky : MonoBehaviour
 
     private void OnEnable() {
         Pacman.OnPlayerDeath += Respawn;
-        Pacman.OnPowerPelletEat += EnterScatter;
+        GhostStateManager.OnScatterEnter += StateChange;
+        GhostStateManager.OnChaseEnter += StateChange;
     }
 
     private void OnDisable() {
         Pacman.OnPlayerDeath -= Respawn;
-        Pacman.OnPowerPelletEat -= EnterScatter;
+        GhostStateManager.OnScatterEnter -= StateChange;
+        GhostStateManager.OnChaseEnter -= StateChange;
     }
 
     private void Update() {
@@ -94,7 +98,12 @@ public class Blinky : MonoBehaviour
         StartCoroutine(DelayStart());
     }
 
-    private void EnterScatter() {
-        currentState = State.Scatter;
+    private void StateChange(GhostStateManager.GhostState newState) {
+        switch (newState) {
+            case GhostStateManager.GhostState.Scatter:
+                currentState = State.Scatter; break;
+            case GhostStateManager.GhostState.Chase:
+                currentState = State.Chase; break;
+        }
     }
 }
