@@ -34,14 +34,14 @@ public class Blinky : MonoBehaviour
 
     private void OnEnable() {
         Pacman.OnPlayerDeath += Respawn;
-        GhostStateManager.OnScatterEnter += StateChange;
-        GhostStateManager.OnChaseEnter += StateChange;
+        GameManager.OnScatterEnter += StateChange;
+        GameManager.OnChaseEnter += StateChange;
     }
 
     private void OnDisable() {
         Pacman.OnPlayerDeath -= Respawn;
-        GhostStateManager.OnScatterEnter -= StateChange;
-        GhostStateManager.OnChaseEnter -= StateChange;
+        GameManager.OnScatterEnter -= StateChange;
+        GameManager.OnChaseEnter -= StateChange;
     }
 
     private void Update() {
@@ -98,11 +98,11 @@ public class Blinky : MonoBehaviour
         StartCoroutine(DelayStart());
     }
 
-    private void StateChange(GhostStateManager.GhostState newState) {
+    private void StateChange(GameManager.GhostState newState) {
         switch (newState) {
-            case GhostStateManager.GhostState.Scatter:
+            case GameManager.GhostState.Scatter:
                 currentState = State.Scatter; break;
-            case GhostStateManager.GhostState.Chase:
+            case GameManager.GhostState.Chase:
                 currentState = State.Chase; break;
         }
     }

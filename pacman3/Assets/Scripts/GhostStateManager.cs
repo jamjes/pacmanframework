@@ -35,24 +35,16 @@ public class GhostStateManager : MonoBehaviour
 
         elapsedTime += Time.deltaTime;
         
-        if (elapsedTime >= stateflow[index]) {
-            if (CurrentState == GhostState.Scatter) {
-                CurrentState = GhostState.Chase;
-                if (OnChaseEnter != null) {
-                    OnChaseEnter(CurrentState);
-                }
-            } 
-            else if (CurrentState == GhostState.Chase) {
-                CurrentState = GhostState.Scatter;
-                if (OnScatterEnter != null) {
-                    OnScatterEnter(CurrentState);
-                }
-            }
-            elapsedTime = 0;
-            index++;
-            if (index == stateflow.Length) {
-                run = false;
-            }
-        }
+        
+    }
+
+    void Pause() {
+        if (run != false)
+        run = false;
+    }
+
+    void Play() {
+        if (run != true)
+        run = true;
     }
 }

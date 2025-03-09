@@ -36,7 +36,7 @@ public class Pacman : MonoBehaviour
         int pellets = GameObject.FindGameObjectsWithTag("Pellet").Length;
         int powerPellets = GameObject.FindGameObjectsWithTag("Power Pellet").Length;
         totalPellets = pellets + powerPellets;
-        TargetDirection = Vector2.right;
+        TargetDirection = Vector2.left;
         Score = 0;
         Lives = 3;
         StartCoroutine(DelayStart());
@@ -159,8 +159,10 @@ public class Pacman : MonoBehaviour
     }
 
     private IEnumerator DelayStart() {
+        GameManager.instance.Pause();
         yield return new WaitForSeconds(3);
         if (TargetDirection == Vector2.zero) TargetDirection = Vector2.right;
         run = true;
+        GameManager.instance.Play();
     }
 }
