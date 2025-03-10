@@ -1,70 +1,57 @@
-using System;
 using UnityEngine;
-using static GhostStateManager;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
     private bool run;
-    private float elapsedTime;
-    public float[] stateflow;
-    private int index = 0;
-    public delegate void GhostStateEvent(GhostState targetState);
-    public static event GhostStateEvent OnScatterEnter;
-    public static event GhostStateEvent OnChaseEnter;
-    public enum GhostState {
-        Chase,
-        Scatter,
-        Frightened,
-        Eaten
-    };
+    public float elapsedTime;
+    public float[] modeDuration;
+    int pointer;
 
-    public GhostState CurrentState = GhostState.Scatter;
+    public delegate void GhostEvent(string state);
+    public static event GhostEvent OnStateChange;
 
-    private void Awake() {
-        if (instance == null) {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        } else {
-            Destroy(this.gameObject);
-        }
+    private void Start() {
+        StartCoroutine(DelayStart());
     }
 
     private void Update() {
         if (run == false) {
             return;
         }
-        
+
+        if (OnStateChange == null) {
+            return;
+        }
+
         elapsedTime += Time.deltaTime;
 
-        if (elapsedTime >= stateflow[index]) {
-            if (CurrentState == GhostState.Scatter) {
-                CurrentState = GhostState.Chase;
-                if (OnChaseEnter != null) {
-                    OnChaseEnter(CurrentState);
-                }
-            }
-            else if (CurrentState == GhostState.Chase) {
-                CurrentState = GhostState.Scatter;
-                if (OnScatterEnter != null) {
-                    OnScatterEnter(CurrentState);
-                }
-            }
-            elapsedTime = 0;
-            index++;
-            if (index == stateflow.Length) {
+        if (elapsedTime >= modeDuration[pointer]) {
+            pointer++;
+            if (pointer == modeDuration.Length) {
                 run = false;
+                OnStateChange("chase");
+                Debug.Log("End");
+            } else {
+                if (pointer % 2 == 0) {
+                    OnStateChange("scatter");
+                } else {
+                    OnStateChange("chase");
+                }
+                elapsedTime = 0;
             }
         }
     }
 
-    public void Play() {
-        if (run == false) run = true;
-        Debug.Log("Resumed");
+    private IEnumerator DelayStart() {
+        yield return new WaitForSeconds(3);
+        run = true;
     }
 
-    public void Pause() {
-        if (run == true) run = false;
-        Debug.Log("Paused");
+    private void PauseTime() {
+        if (run == true) {
+            run = false;
+            StartCoroutine(DelayStart());
+        }
     }
 }

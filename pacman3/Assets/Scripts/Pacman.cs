@@ -1,168 +1,138 @@
 using System.Collections;
 using UnityEngine;
 
-public class Pacman : MonoBehaviour
+public class Pacman : MonoBehaviour, IDamageable
 {
-    public int Score { get; private set; }
-    public int Lives { get; private set; }
-    [SerializeField] private float moveDuration;
     public Vector2 TargetDirection { get; private set; }
-    private Vector2 currentDirection;
-    private GridMovement movement;
+    public Vector2 Direction { get; private set; }
+    private Vector2 targetPosition;
     public LayerMask wallLayer;
-    private Vector2 startPosition, targetPosition;
-    private bool? isMoving = false;
-    public delegate void UIEvent(Pacman self);
-    public static event UIEvent OnScoreUpdate;
+    public float speed;
+    private bool canMove;
+    private Movement movement;
+    private bool run;
+    private Vector2 spawnPosition;
+    private int lives = 3;
     public delegate void PlayerEvent();
-    public static event PlayerEvent OnPowerPelletEat;
+    public static event PlayerEvent OnPlayerDamage;
     public static event PlayerEvent OnPlayerDeath;
     public static event PlayerEvent OnPlayerWin;
-    private bool run;
+    private int score;
     private int totalPellets;
-
-    public enum State {
-        Chase,
-        Frightened
-    };
-
-    public State gameState;
+    private Vector2 teleportA = new Vector2(-14, 3);
+    private Vector2 teleportB = new Vector2(15, 3);
 
     private void Awake() {
-        movement = new GridMovement(moveDuration);
+        movement = new Movement(speed);
     }
 
     private void Start() {
-        int pellets = GameObject.FindGameObjectsWithTag("Pellet").Length;
-        int powerPellets = GameObject.FindGameObjectsWithTag("Power Pellet").Length;
-        totalPellets = pellets + powerPellets;
         TargetDirection = Vector2.left;
-        Score = 0;
-        Lives = 3;
+        spawnPosition = transform.position;
+        totalPellets = GameObject.FindGameObjectsWithTag("Pellet").Length + GameObject.FindGameObjectsWithTag("Power Pellet").Length;
         StartCoroutine(DelayStart());
     }
 
-    private void Update() {
-        ListenForInputs();
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.UpArrow)) {
+            TargetDirection = Vector2.up;
+        }
+        else if (Input.GetKeyDown(KeyCode.LeftArrow)) {
+            TargetDirection = Vector2.left;
+        }
+        else if (Input.GetKeyDown(KeyCode.DownArrow)) {
+            TargetDirection = Vector2.down;
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow)) {
+            TargetDirection = Vector2.right;
+        }
 
         if (run == false) {
             return;
         }
-        
-        CollisionChecks();
-        
-        if (isMoving == false) {
-            Vector2 direction = CalculateDirection();
-            if (direction != Vector2.zero) {
-                startPosition = transform.position;
-                targetPosition = startPosition + direction;
-                currentDirection = direction;
-                isMoving = true;
+
+        RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, Direction, .55f);
+        foreach(RaycastHit2D hit in hits) {
+            CollisionCheck(hit.collider);
+        }
+
+        if (canMove == false) {
+            if ((Vector2)transform.position + Direction == teleportA) {
+                transform.position = teleportB;
+            } else if ((Vector2)transform.position + Direction == teleportB) {
+                transform.position = teleportA;
             }
-        } else if (isMoving == true){
-            isMoving = !movement.MoveTo(transform, startPosition, targetPosition);
-        }
-    }
 
-    private void ListenForInputs() {
-        if (Input.GetKeyDown(KeyCode.UpArrow)) {
-            TargetDirection = Vector2.up;
-        }
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, TargetDirection, .55f, wallLayer);
 
-        if (Input.GetKeyDown(KeyCode.LeftArrow)) {
-            TargetDirection = Vector2.left;
-        }
-
-        if (Input.GetKeyDown(KeyCode.DownArrow)) {
-            TargetDirection = Vector2.down;
-        }
-
-        if (Input.GetKeyDown(KeyCode.RightArrow)) {
-            TargetDirection = Vector2.right;
-        }
-    }
-
-    private Vector2 CalculateDirection() {
-        Vector2 direction = Vector2.zero;
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, TargetDirection, .55f, wallLayer);
-        if (hit.collider == null) { //Intended direction is not a wall
-            direction = TargetDirection;
-        }
-        else if (currentDirection != Vector2.zero) {
-            hit = Physics2D.Raycast(transform.position, currentDirection, .55f, wallLayer);
-            if (hit.collider == null) { //Continuing in previous direction is not a wall
-                direction = currentDirection;
-            }
-        }
-
-        return direction;
-    }
-
-    private void CollisionChecks() {
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, currentDirection, .5f);
-        if (hit.collider == null) {
-            return;
-        }
-        
-        if ((hit.collider.tag == "Pellet" || hit.collider.tag == "Power Pellet")) {
-            totalPellets--;
-            UpdateScore(hit.collider.tag);
-            Destroy(hit.collider.gameObject);
-            if (totalPellets == 0) {
-                run = false;
-                if (OnPlayerWin != null) { 
-                    OnPlayerWin();
+            if (hit.collider == null) {
+                Direction = TargetDirection;
+            } else {
+                hit = Physics2D.Raycast(transform.position, Direction, .55f, wallLayer);
+                if (hit.collider != null) {
+                    Direction = Vector2.zero;
                 }
             }
-        } else if (hit.collider.tag == "Ghost") {
-            Death();
-        } else if (hit.collider.tag == "Teleport") {
-            transform.position = hit.collider.GetComponent<Teleport>().TeleportPoint;
-            isMoving = false;
-        }
-    }
 
-    private void UpdateScore(string tag) {
-        if (tag == "Pellet") {
-            Score += 10;
-        } else if (tag == "Power Pellet") {
-            Score += 50;
-            gameState = State.Frightened;
-            if (OnPowerPelletEat != null) {
-                OnPowerPelletEat();
+            if (Direction != Vector2.zero) {
+                targetPosition = (Vector2)transform.position + Direction;
+                canMove = true;
             }
         }
-
-        if (OnScoreUpdate != null) {
-            OnScoreUpdate(this);
+        
+        if (canMove) {
+            canMove = movement.Move(transform, targetPosition);
         }
     }
 
-    private void CheckGhostCondition(Collider2D ghost) {
-        if (gameState == State.Frightened) {
-            Score += 200;
-            if (OnScoreUpdate != null) {
-                OnScoreUpdate(this);
+    public void Death(string attacker) {
+        if (attacker == "Ghost") {
+            lives--;
+            Debug.Log(name + " has been killed");
+            run = false;
+            canMove = false;
+            if (lives > 0) {
+                if (OnPlayerDamage != null) {
+                    transform.position = spawnPosition;
+                    OnPlayerDamage();
+                    StartCoroutine(DelayStart());
+                }
+            } else {
+                if (OnPlayerDeath != null) {
+                    OnPlayerDeath();
+                }
             }
-        }
-    }
-
-    private void Death() {
-        run = false;
-        if (OnPlayerDeath != null) OnPlayerDeath();
-        Lives--;
-        if (Lives > 0) {
-            transform.position = startPosition = targetPosition = Vector2.zero;
-            currentDirection = TargetDirection = Vector2.zero;
-            StartCoroutine(DelayStart());
+            
         }
     }
 
     private IEnumerator DelayStart() {
-        GameManager.instance.Pause();
         yield return new WaitForSeconds(3);
-        if (TargetDirection == Vector2.zero) TargetDirection = Vector2.right;
         run = true;
-        GameManager.instance.Play();
+    }
+
+    private void CollisionCheck(Collider2D collision) {
+        if (collision.tag == "Pellet") {
+            score+=10;
+            totalPellets--;
+            Destroy(collision.gameObject);
+            if (totalPellets == 0) {
+                if (OnPlayerWin != null) {
+                    OnPlayerWin();
+                    run = false;
+                }
+            }
+        } else if (collision.tag == "Power Pellet") {
+            score += 50;
+            totalPellets--;
+            Destroy(collision.gameObject);
+            if (totalPellets == 0) {
+                if (OnPlayerWin != null) {
+                    OnPlayerWin();
+                    run = false;
+                }
+            }
+        }
     }
 }

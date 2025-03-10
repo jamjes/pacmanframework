@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class InkyTargetSystem : GhostController
+public class Inky : Ghost
 {
     public Transform Blinky;
 
