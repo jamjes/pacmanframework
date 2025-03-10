@@ -19,8 +19,8 @@ public class Pacman : MonoBehaviour, IDamageable
     public static event PlayerEvent OnPlayerWin;
     private int score;
     private int totalPellets;
-    private Vector2 teleportA = new Vector2(-14, 3);
-    private Vector2 teleportB = new Vector2(15, 3);
+    public Vector2 teleportA = new Vector2(-14, 3);
+    public Vector2 teleportB = new Vector2(15, 3);
 
     private void Awake() {
         movement = new Movement(speed);
@@ -118,9 +118,9 @@ public class Pacman : MonoBehaviour, IDamageable
             totalPellets--;
             Destroy(collision.gameObject);
             if (totalPellets == 0) {
+                run = false;
                 if (OnPlayerWin != null) {
                     OnPlayerWin();
-                    run = false;
                 }
             }
         } else if (collision.tag == "Power Pellet") {
@@ -128,9 +128,9 @@ public class Pacman : MonoBehaviour, IDamageable
             totalPellets--;
             Destroy(collision.gameObject);
             if (totalPellets == 0) {
+                run = false;
                 if (OnPlayerWin != null) {
                     OnPlayerWin();
-                    run = false;
                 }
             }
         }
