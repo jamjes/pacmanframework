@@ -11,11 +11,12 @@ public class Pinky : Ghost
         base.OnDisable();
     }
 
-    protected override void Update() {
+    protected override void ChaseUpdate() {
         if (canMove == false && CurrentState == GhostState.Chase) {
             if (player.TargetDirection == Vector2.up) {
                 targetPosition = (Vector2)player.transform.position + (Vector2.left + Vector2.up) * 2;
-            } else {
+            }
+            else {
                 targetPosition = (Vector2)player.transform.position + player.TargetDirection * 2;
             }
 
@@ -24,7 +25,5 @@ public class Pinky : Ghost
             targetPosition = (Vector2)transform.position + targetDirection;
             canMove = true;
         }
-
-        base.Update();
     }
 }

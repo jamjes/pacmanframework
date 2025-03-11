@@ -12,10 +12,10 @@ public class Inky : Ghost
         base.OnDisable();
     }
 
-    protected override void Update() {
+    protected override void ChaseUpdate() {
         if (canMove == false && CurrentState == GhostState.Chase) {
             Vector2 pacmanPos;
-            
+
             if (player.Direction == Vector2.up) {
                 pacmanPos = (Vector2)player.transform.position + (Vector2.left + Vector2.up) * 2;
             }
@@ -33,7 +33,5 @@ public class Inky : Ghost
             targetPosition = (Vector2)transform.position + targetDirection;
             canMove = true;
         }
-
-        base.Update();
     }
 }

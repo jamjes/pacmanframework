@@ -13,7 +13,7 @@ public class Blinky : Ghost
         Pacman.OnAggroEnter -= ForceChase;
     }
 
-    protected override void Update() {
+    protected override void ChaseUpdate() {
         if (canMove == false && CurrentState == GhostState.Chase) {
             targetPosition = player.transform.position;
             pointer.position = targetPosition;
@@ -21,8 +21,6 @@ public class Blinky : Ghost
             targetPosition = (Vector2)transform.position + targetDirection;
             canMove = true;
         }
-
-        base.Update();
     }
 
     private void ForceChase() {

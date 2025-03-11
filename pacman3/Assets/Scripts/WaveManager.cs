@@ -7,7 +7,7 @@ public class WaveManager : MonoBehaviour
     public Ghost[] ghosts;
     private bool run = false;
     
-    private float[] spawnTimes = {8, 17, 26 };
+    private float[] spawnTimes = {8, 16, 24 };
     private int ghostIndex;
     public float elapsedTime;
 
@@ -44,7 +44,7 @@ public class WaveManager : MonoBehaviour
                 ghostIndex++;
             }
         }
-        
+
         if (stateIndex != stateTimes.Length) {
             if (Mathf.Floor(elapsedTime) == stateTimes[stateIndex]) {
                 foreach (Ghost ghost in ghosts) {

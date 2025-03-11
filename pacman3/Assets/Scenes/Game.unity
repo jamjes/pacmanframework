@@ -10696,7 +10696,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   wallLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   speed: 8
   teleportA: {x: -14, y: 0}
   teleportB: {x: 15, y: 0}
@@ -14532,10 +14532,11 @@ MonoBehaviour:
   allLayers:
     serializedVersion: 2
     m_Bits: 192
-  targetDirection: {x: 0, y: 1}
+  targetDirection: {x: 0, y: 0}
+  startingDirection: {x: 0, y: 1}
   pointer: {fileID: 244160406}
   homePosition: {x: -11, y: -16}
-  isEnabled: 0
+  active: 0
   Blinky: {fileID: 1500232747}
 --- !u!1 &849506971
 GameObject:
@@ -14656,9 +14657,17 @@ Tilemap:
   m_TileAssetArray:
   - m_RefCount: 2
     m_Data: {fileID: 11400000, guid: fa7ab5f684d3b964998193401c883749, type: 2}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   m_TileSpriteArray:
   - m_RefCount: 2
     m_Data: {fileID: 4382050293095063611, guid: 29b8265b6d7b48f46a438ce7dec04f7d, type: 3}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   m_TileMatrixArray:
   - m_RefCount: 2
     m_Data:
@@ -14684,8 +14693,8 @@ Tilemap:
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Origin: {x: 0, y: -4, z: 0}
-  m_Size: {x: 2, y: 4, z: 1}
+  m_Origin: {x: -8, y: -6, z: 0}
+  m_Size: {x: 18, y: 6, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
@@ -17486,10 +17495,11 @@ MonoBehaviour:
   allLayers:
     serializedVersion: 2
     m_Bits: 192
-  targetDirection: {x: 0, y: -1}
+  targetDirection: {x: 0, y: 0}
+  startingDirection: {x: 0, y: -1}
   pointer: {fileID: 1997720497}
   homePosition: {x: -11, y: 17}
-  isEnabled: 0
+  active: 0
 --- !u!1 &1010255461
 GameObject:
   m_ObjectHideFlags: 0
@@ -23242,10 +23252,11 @@ MonoBehaviour:
   allLayers:
     serializedVersion: 2
     m_Bits: 192
-  targetDirection: {x: 0, y: 1}
+  targetDirection: {x: 0, y: 0}
+  startingDirection: {x: 0, y: 1}
   pointer: {fileID: 411761}
   homePosition: {x: 12, y: -16}
-  isEnabled: 0
+  active: 0
 --- !u!1 &1327198210
 GameObject:
   m_ObjectHideFlags: 0
@@ -25323,9 +25334,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 192
   targetDirection: {x: 0, y: 0}
+  startingDirection: {x: -1, y: 0}
   pointer: {fileID: 2087058931}
   homePosition: {x: 12, y: 17}
-  isEnabled: 1
+  active: 1
 --- !u!1 &1501239329
 GameObject:
   m_ObjectHideFlags: 0
@@ -45647,7 +45659,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2084990696}
-  - component: {fileID: 2084990697}
   - component: {fileID: 2084990698}
   m_Layer: 0
   m_Name: Level Manager
@@ -45671,33 +45682,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2084990697
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2084990695}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 036cea8ee329ade45a9ca3d954d58966, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  elapsedTime: 0
-  modeDuration:
-  - 7
-  - 27
-  - 34
-  - 54
-  - 59
-  - 79
-  - 84
-  gate: {fileID: 849506971}
-  ghosts:
-  - {fileID: 1500232749}
-  - {fileID: 1006532318}
-  - {fileID: 845482243}
-  - {fileID: 1326982496}
 --- !u!114 &2084990698
 MonoBehaviour:
   m_ObjectHideFlags: 0
