@@ -1,11 +1,19 @@
 using UnityEngine;
-
+using CustomVariables;
 public class Inky : Ghost
 {
     public Transform Blinky;
 
+    protected override void OnEnable() {
+        base.OnEnable();
+    }
+
+    protected override void OnDisable() {
+        base.OnDisable();
+    }
+
     protected override void Update() {
-        if (canMove == false && CurrentState == State.Chase) {
+        if (canMove == false && CurrentState == GhostState.Chase) {
             Vector2 pacmanPos;
             
             if (player.Direction == Vector2.up) {

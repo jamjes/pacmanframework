@@ -1,51 +1,47 @@
 using UnityEngine;
 using System.Collections;
+using CustomVariables;
 
 public class Ghost : MonoBehaviour, IDamageable
 {
-    public enum State {
-        Chase,
-        Scatter,
-        Frightened,
-        Eaten
-    };
-
-    public State CurrentState;
-
+    Vector2 initPos = new Vector2(0,3);
+    public Color startColor, frightenedColor;
+    public GhostState CurrentState;
     public float speed;
     protected Movement movement;
     protected Pathfinding pathfinding;
-    public LayerMask wallLayer;
+    public LayerMask wallLayer, allLayers;
     protected bool canMove;
     protected Pacman player;
     protected Vector2 targetPosition;
-    protected Vector2 targetDirection;
+    public Vector2 targetDirection;
     protected bool run;
     protected Vector2 spawnPosition;
     public Transform pointer;
     public Vector2 homePosition;
+    protected bool forceChase;
 
-    private Vector2 teleportA = new Vector2(-14, 3);
-    private Vector2 teleportB = new Vector2(15, 3);
+    private Vector2 teleportA = new Vector2(-14, 0);
+    private Vector2 teleportB = new Vector2(15, 0);
+    private Vector2 startPosition = new Vector2(0, 3);
+    public bool isEnabled;
 
     private void Awake() {
         movement = new Movement(speed);
-        pathfinding = new Pathfinding(transform, wallLayer);
+        pathfinding = new Pathfinding(transform, wallLayer, allLayers);
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Pacman>();
     }
 
-    private void OnEnable() {
-        Pacman.OnPlayerDamage += Reset;
+    protected virtual void OnEnable() {
+        Pacman.OnPlayerDamage += ResetObject;
         Pacman.OnPlayerDeath += Stop;
         Pacman.OnPlayerWin += Stop;
-        GameManager.OnStateChange += ChangeState;
     }
 
-    private void OnDisable() {
-        Pacman.OnPlayerDamage -= Reset;
+    protected virtual void OnDisable() {
+        Pacman.OnPlayerDamage -= ResetObject;
         Pacman.OnPlayerDeath -= Stop;
         Pacman.OnPlayerWin -= Stop;
-        GameManager.OnStateChange -= ChangeState;
     }
 
     private void Start() {
@@ -71,21 +67,57 @@ public class Ghost : MonoBehaviour, IDamageable
         foreach (RaycastHit2D hit in hitAll) {
             IDamageable damageableObject = hit.collider.GetComponent<IDamageable>();
             if (damageableObject != null) {
-                //damageableObject.Death(gameObject.tag);
+                damageableObject.Death(gameObject.tag);
             }
         }
 
         if (canMove) {
             canMove = movement.Move(transform, targetPosition);
         } else {
-            if (CurrentState == State.Scatter) {
+            if (CurrentState == GhostState.Scatter) {
                 targetPosition = homePosition;
                 pointer.position = targetPosition;
                 targetDirection = pathfinding.GetShortestDirection(targetPosition, targetDirection);
                 targetPosition = (Vector2)transform.position + targetDirection;
                 canMove = true;
+            } else {
+                if (CurrentState == GhostState.Disable) {
+                    if (isEnabled && ((Vector2)transform.position != startPosition)) {
+                        targetPosition = startPosition;
+                        pointer.position = targetPosition;
+                        targetDirection = pathfinding.GetShortestDirectionIgnore(targetPosition, targetDirection);
+                        targetPosition = (Vector2)transform.position + targetDirection;
+                        canMove = true;
+                    } else if (isEnabled && ((Vector2)transform.position == startPosition)) {
+                        SetState(GhostState.Chase);
+                    }
+                }
             }
         }
+    }
+
+    private void InitUpdate() {
+        if ((Vector2)transform.position == initPos) {
+            SetState(GhostState.Chase);
+            return;
+        }
+
+        targetPosition = initPos;
+        targetDirection = pathfinding.GetShortestDirectionIgnore(targetPosition, targetDirection);
+        targetPosition = (Vector2)transform.position + targetDirection;
+        canMove = true;
+    }
+
+    private void IdleUpdate() {
+        if ((Vector2)transform.position == spawnPosition + Vector2.up) {
+            targetDirection = Vector2.down;
+        } 
+        else if ((Vector2)transform.position == spawnPosition + Vector2.down) {
+            targetDirection = Vector2.up;
+        }
+
+        targetPosition = (Vector2)transform.position + targetDirection;
+        canMove = true;
     }
 
     public void Death(string attacker) {
@@ -94,9 +126,15 @@ public class Ghost : MonoBehaviour, IDamageable
         }
     }
 
-    private void Reset() {
+    private void ResetObject() {
         Stop();
         transform.position = spawnPosition;
+        if (spawnPosition != startPosition) {
+            SetState(GhostState.Disable);
+            isEnabled = false;
+        } else {
+            SetState(GhostState.Scatter);
+        }
         StartCoroutine(DelayStart());
     }
 
@@ -110,14 +148,19 @@ public class Ghost : MonoBehaviour, IDamageable
         run = true;
     }
 
-    private void ChangeState(string state) {
-        switch (state) {
-            case "chase":
-                CurrentState = State.Chase;
-                break;
-            case "scatter":
-                CurrentState = State.Scatter;
-                break;
+    public void SetState(GhostState targetState) {
+        if (isEnabled == false) {
+            return;
         }
+        
+        if (forceChase) {
+            CurrentState = GhostState.Chase;
+        } else {
+            CurrentState = targetState;
+        }
+    }
+
+    public void Enable() {
+        isEnabled = true;
     }
 }

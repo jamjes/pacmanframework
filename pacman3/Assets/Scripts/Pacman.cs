@@ -17,6 +17,7 @@ public class Pacman : MonoBehaviour, IDamageable
     public static event PlayerEvent OnPlayerDamage;
     public static event PlayerEvent OnPlayerDeath;
     public static event PlayerEvent OnPlayerWin;
+    public static event PlayerEvent OnAggroEnter;
     private int score;
     private int totalPellets;
     public Vector2 teleportA = new Vector2(-14, 3);
@@ -89,7 +90,6 @@ public class Pacman : MonoBehaviour, IDamageable
     public void Death(string attacker) {
         if (attacker == "Ghost") {
             lives--;
-            Debug.Log(name + " has been killed");
             run = false;
             canMove = false;
             if (lives > 0) {
@@ -122,6 +122,10 @@ public class Pacman : MonoBehaviour, IDamageable
                 if (OnPlayerWin != null) {
                     OnPlayerWin();
                 }
+            } else if (totalPellets == 20) {
+                if (OnAggroEnter != null) {
+                    OnAggroEnter();
+                }
             }
         } else if (collision.tag == "Power Pellet") {
             score += 50;
@@ -131,6 +135,12 @@ public class Pacman : MonoBehaviour, IDamageable
                 run = false;
                 if (OnPlayerWin != null) {
                     OnPlayerWin();
+                }
+            }
+            else if (totalPellets == 20) {
+                Debug.Log("Aggro Mode Trigger");
+                if (OnAggroEnter != null) {
+                    OnAggroEnter();
                 }
             }
         }

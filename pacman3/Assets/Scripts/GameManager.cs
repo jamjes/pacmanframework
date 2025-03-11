@@ -7,9 +7,12 @@ public class GameManager : MonoBehaviour
     public float elapsedTime;
     public float[] modeDuration;
     int pointer;
+    public GameObject gate;
 
     public delegate void GhostEvent(string state);
     public static event GhostEvent OnStateChange;
+
+    public Ghost[] ghosts;
 
     private void Start() {
         StartCoroutine(DelayStart());
@@ -25,6 +28,13 @@ public class GameManager : MonoBehaviour
         }
 
         elapsedTime += Time.deltaTime;
+        //if (Mathf.Floor(elapsedTime) == 8 && ghosts[1].CurrentState != Ghost.State.Init) {
+        //    ghosts[1].CurrentState = Ghost.State.Init;
+        //} else if (Mathf.Floor(elapsedTime) == 17 && ghosts[2].CurrentState != Ghost.State.Init) {
+        //    ghosts[2].CurrentState = Ghost.State.Init;
+        //} else if (Mathf.Floor(elapsedTime) == 26 && ghosts[3].CurrentState != Ghost.State.Init) {
+        //    ghosts[3].CurrentState = Ghost.State.Init;
+        //}
 
         if (elapsedTime >= modeDuration[pointer]) {
             pointer++;
