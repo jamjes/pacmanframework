@@ -1,11 +1,11 @@
 using UnityEngine;
 using System.Collections;
 using CustomVariables;
+using UnityEditor.Experimental.GraphView;
 
 public class Ghost : MonoBehaviour, IDamageable
 {
     Vector2 initPos = new Vector2(0,3);
-    public Color startColor, frightenedColor;
     public GhostState CurrentState;
     public float speed;
     protected Movement movement;
@@ -24,6 +24,8 @@ public class Ghost : MonoBehaviour, IDamageable
     private Vector2 teleportA = new Vector2(-14, 0);
     private Vector2 teleportB = new Vector2(15, 0);
     private Vector2 startPosition = new Vector2(0, 3);
+    private Vector2 slowZoneA = new Vector2(-8,0);
+    private Vector2 slowZoneB = new Vector2(9,0);
     public bool isEnabled;
 
     private void Awake() {
@@ -61,6 +63,19 @@ public class Ghost : MonoBehaviour, IDamageable
         else if ((Vector2)transform.position + targetDirection == teleportB) {
             transform.position = teleportA;
             canMove = false;
+        } 
+        else if ((Vector2)transform.position == slowZoneA && targetDirection == Vector2.left
+                || (Vector2)transform.position == slowZoneB && targetDirection == Vector2.right) {
+            movement.SetMoveSpeed(5);
+        }
+        else if ((Vector2)transform.position == slowZoneA && targetDirection == Vector2.right 
+                || (Vector2)transform.position == slowZoneB && targetDirection == Vector2.left) {
+            if (forceChase) {
+                movement.SetMoveSpeed(8);
+            }
+            else {
+                movement.SetMoveSpeed(7);
+            }
         }
 
         RaycastHit2D[] hitAll = Physics2D.RaycastAll(transform.position, targetDirection, .55f);
@@ -134,6 +149,12 @@ public class Ghost : MonoBehaviour, IDamageable
             isEnabled = false;
         } else {
             SetState(GhostState.Scatter);
+        }
+
+        if (forceChase) {
+            movement.SetMoveSpeed(8);
+        } else {
+            movement.SetMoveSpeed(7);
         }
         StartCoroutine(DelayStart());
     }

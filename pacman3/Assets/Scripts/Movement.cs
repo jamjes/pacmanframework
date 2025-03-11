@@ -15,4 +15,8 @@ public class Movement {
             return true;
         }
     }
+
+    public void SetMoveSpeed(float speed) {
+        this.speed = speed;
+    }
 }

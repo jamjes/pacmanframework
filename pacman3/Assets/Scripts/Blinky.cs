@@ -26,9 +26,8 @@ public class Blinky : Ghost
     }
 
     private void ForceChase() {
-        Debug.Log(name + ", has entered Agro Mode");
         forceChase = true;
-        speed = 8;
+        movement.SetMoveSpeed(8);
         SetState(GhostState.Chase);
     }
 }
