@@ -1,6 +1,7 @@
 using UnityEngine;
 using CustomVariables;
 using System.Collections;
+using Unity.VisualScripting;
 
 public class WaveManager : MonoBehaviour
 {
@@ -48,6 +49,10 @@ public class WaveManager : MonoBehaviour
         if (stateIndex != stateTimes.Length) {
             if (Mathf.Floor(elapsedTime) == stateTimes[stateIndex]) {
                 foreach (Ghost ghost in ghosts) {
+                    if (ghost.CurrentState == GhostState.Frightened) {
+                        break;
+                    }
+
                     if (stateIndex % 2 == 0) {
                         ghost.SetState(GhostState.Chase);
                     }

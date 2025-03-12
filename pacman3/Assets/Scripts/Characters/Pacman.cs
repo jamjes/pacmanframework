@@ -6,7 +6,8 @@ public class Pacman : MonoBehaviour, IDamageable
     public Vector2 TargetDirection { get; private set; }
     public Vector2 Direction { get; private set; }
     private Vector2 targetPosition;
-    public float speed;
+    [SerializeField] private float speed;
+    [SerializeField] private int score;
     private bool canMove;
     private Movement movement;
     private bool run;
@@ -17,7 +18,7 @@ public class Pacman : MonoBehaviour, IDamageable
     public static event PlayerEvent OnPlayerDeath;
     public static event PlayerEvent OnPlayerWin;
     public static event PlayerEvent OnAggroEnter;
-    private int score;
+    public static event PlayerEvent OnPowerPellet;
     private int totalPellets;
     public GridSettings gridSettings;
 
@@ -111,6 +112,34 @@ public class Pacman : MonoBehaviour, IDamageable
     }
 
     private void CollisionCheck(Collider2D collision) {
+        if (collision.tag == "Pellet" || collision.tag == "Power Pellet") {
+            if (collision.tag == "Pellet") {
+                score += 10;
+            }
+            else {
+                score += 50;
+                if (OnPowerPellet != null) {
+                    OnPowerPellet();
+                }
+            }
+
+            totalPellets--;
+            Destroy(collision.gameObject);
+            if (totalPellets == 0) {
+                run = false;
+                if (OnPlayerWin != null) {
+                    OnPlayerWin();
+                }
+            }
+            else if (totalPellets == 20) {
+                if (OnAggroEnter != null) {
+                    OnAggroEnter();
+                }
+            }
+        }
+
+        return;
+        
         if (collision.tag == "Pellet") {
             score+=10;
             totalPellets--;

@@ -1,26 +1,29 @@
 using UnityEngine;
 using System.Collections;
 using CustomVariables;
+using Unity.VisualScripting;
 
 public class Ghost : MonoBehaviour, IDamageable
 {
-    private GhostState CurrentState;
+    private Color baseColor, frightenedColor = Color.blue;
+
+    public GhostState CurrentState { get; private set; }
+    private GhostState? SuperState = null;
     protected Movement movement;
     protected Pathfinding pathfinding;
     protected Pacman player;
-    
-    //public LayerMask gridSettings.WallLayer, gridSettings.AllBlockingLayers;
     public Transform pointer;
     
     protected bool active;
     protected bool canMove;
     protected bool run;
     protected bool forceChase;
+    private bool directionSwitch;
     
     [SerializeField] private float speed;
 
     protected Vector2 homePosition;
-    protected Vector2 targetDirection;
+    public Vector2 targetDirection;
     protected Vector2 startingDirection;
     protected Vector2 targetPosition;
     protected Vector2 spawnPosition;
@@ -37,19 +40,20 @@ public class Ghost : MonoBehaviour, IDamageable
         Pacman.OnPlayerDamage += ResetObject;
         Pacman.OnPlayerDeath += Stop;
         Pacman.OnPlayerWin += Stop;
+        Pacman.OnPowerPellet += PowerPelletEvent;
     }
 
     protected virtual void OnDisable() {
         Pacman.OnPlayerDamage -= ResetObject;
         Pacman.OnPlayerDeath -= Stop;
         Pacman.OnPlayerWin -= Stop;
+        Pacman.OnPowerPellet -= PowerPelletEvent;
     }
 
     protected virtual void Start() {
         spawnPosition = transform.position;
+        baseColor = GetComponentInChildren<SpriteRenderer>().color;
         StartCoroutine(DelayStart());
-        Debug.Log(name + ", " + CurrentState);
-
     }
 
     private void Update() {
@@ -157,10 +161,13 @@ public class Ghost : MonoBehaviour, IDamageable
             return;
         }
         
-        if (forceChase) {
+        if (forceChase && targetState != GhostState.Frightened) {
             CurrentState = GhostState.Chase;
         } else {
             CurrentState = targetState;
+            if (CurrentState == GhostState.Frightened) {
+                directionSwitch = false;
+            }
         }
     }
 
@@ -173,7 +180,12 @@ public class Ghost : MonoBehaviour, IDamageable
         if (active) {
             if ((Vector2)transform.position == startPosition) {
                 UpdateSpeed(7);
-                SetState(GhostState.Chase);
+                if (SuperState != null) {
+                    SetState((GhostState)SuperState);
+                    targetDirection = Vector2.right;
+                } else {
+                    SetState(GhostState.Chase);
+                }
                 return;
             }
 
@@ -203,6 +215,7 @@ public class Ghost : MonoBehaviour, IDamageable
         if (forceChase) {
             ChaseUpdate();
         }
+
         targetPosition = homePosition;
         targetDirection = pathfinding.GetShortestDirection(targetPosition, targetDirection);
         targetPosition = (Vector2)transform.position + targetDirection;
@@ -210,10 +223,37 @@ public class Ghost : MonoBehaviour, IDamageable
     }
 
     private void FrightenedUpdate() {
-        Debug.Log("CurrentState = Frightened");
+        if (directionSwitch == false) {
+            targetDirection *= -1;
+            directionSwitch = true;
+        }
+        else {
+            targetDirection = pathfinding.GetRandomDirection(targetDirection, gridSettings.AllBlockingLayers);
+        }
+
+        targetPosition = (Vector2)transform.position + targetDirection;
+        canMove = true;
     }
 
     private void EatenUpdate() {
         Debug.Log("CurrentState = Eaten");
+    }
+
+    private void PowerPelletEvent() {
+        StartCoroutine(PowerPelletDuration());
+        SuperState = GhostState.Frightened;
+        if (CurrentState == GhostState.Chase || CurrentState == GhostState.Scatter) {
+            SetState(GhostState.Frightened);
+        }
+    }
+
+    private IEnumerator PowerPelletDuration() {
+        GetComponentInChildren<SpriteRenderer>().color = frightenedColor;
+        yield return new WaitForSeconds(7);
+        SuperState = null;
+        if (CurrentState == GhostState.Frightened) {
+            CurrentState = GhostState.Chase;
+        }
+        GetComponentInChildren<SpriteRenderer>().color = baseColor;
     }
 }

@@ -122,4 +122,35 @@ public class Pathfinding
 
         return availableDirections[0];
     }
+
+    public Vector2 GetRandomDirection(Vector2 currentDirection, LayerMask targetLayer) {
+        List<Vector2> directions = new List<Vector2>();
+
+        RaycastHit2D hit = Physics2D.Raycast(self.position, Vector2.right, .55f, targetLayer);
+        if (hit.collider == null && currentDirection * -1 != Vector2.right) {
+            directions.Add(Vector2.right);
+        }
+
+        hit = Physics2D.Raycast(self.position, Vector2.down, .55f, targetLayer);
+        if (hit.collider == null && currentDirection * -1 != Vector2.down) {
+            directions.Add(Vector2.down);
+        }
+
+        hit = Physics2D.Raycast(self.position, Vector2.left, .55f, targetLayer);
+        if (hit.collider == null && currentDirection * -1 != Vector2.left) {
+            directions.Add(Vector2.left);
+        }
+
+        hit = Physics2D.Raycast(self.position, Vector2.up, .55f, targetLayer);
+        if (hit.collider == null && currentDirection * -1 != Vector2.up) {
+            directions.Add(Vector2.up);
+        }
+
+        if (directions.Count == 1) {
+            return directions[0];
+        } else {
+            int index = Random.Range(0, directions.Count - 1);
+            return directions[index];
+        }
+    }
 }

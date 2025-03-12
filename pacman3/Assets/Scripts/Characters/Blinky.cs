@@ -5,6 +5,7 @@ public class Blinky : Ghost
     protected override void Start() {
         homePosition = new Vector2(12, 17);
         active = true;
+        SetState(CustomVariables.GhostState.Scatter);
         base.Start();
     }
 

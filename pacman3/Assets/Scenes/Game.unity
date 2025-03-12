@@ -5697,8 +5697,8 @@ GameObject:
   - component: {fileID: 342799089}
   - component: {fileID: 342799088}
   m_Layer: 0
-  m_Name: Pellet (23)
-  m_TagString: Pellet
+  m_Name: Power Pellet
+  m_TagString: Power Pellet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5762,7 +5762,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.35, y: 0.35}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!212 &342799089
 SpriteRenderer:
@@ -5808,7 +5808,7 @@ SpriteRenderer:
   m_SortingLayerID: 2033392199
   m_SortingLayer: -1
   m_SortingOrder: 2
-  m_Sprite: {fileID: -6405091691956346833, guid: 29b8265b6d7b48f46a438ce7dec04f7d, type: 3}
+  m_Sprite: {fileID: -8686292548640262590, guid: 29b8265b6d7b48f46a438ce7dec04f7d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -10695,6 +10695,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 8
+  score: 0
   gridSettings: {fileID: 1628503425}
 --- !u!1 &644672816
 GameObject:
@@ -13023,8 +13024,8 @@ GameObject:
   - component: {fileID: 758492763}
   - component: {fileID: 758492762}
   m_Layer: 0
-  m_Name: Pellet
-  m_TagString: Pellet
+  m_Name: Power Pellet
+  m_TagString: Power Pellet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -13088,7 +13089,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.35, y: 0.35}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!212 &758492763
 SpriteRenderer:
@@ -13134,7 +13135,7 @@ SpriteRenderer:
   m_SortingLayerID: 2033392199
   m_SortingLayer: -1
   m_SortingOrder: 2
-  m_Sprite: {fileID: -6405091691956346833, guid: 29b8265b6d7b48f46a438ce7dec04f7d, type: 3}
+  m_Sprite: {fileID: -8686292548640262590, guid: 29b8265b6d7b48f46a438ce7dec04f7d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -14298,7 +14299,7 @@ Transform:
   m_GameObject: {fileID: 815334535}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.5, y: -0.5, z: 1}
+  m_LocalPosition: {x: 0.54, y: -0.5, z: 1}
   m_LocalScale: {x: 0.89, y: 0.89, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -19853,8 +19854,8 @@ GameObject:
   - component: {fileID: 1115374721}
   - component: {fileID: 1115374720}
   m_Layer: 0
-  m_Name: Pellet
-  m_TagString: Pellet
+  m_Name: Power Pellet
+  m_TagString: Power Pellet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -19918,7 +19919,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.35, y: 0.35}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!212 &1115374721
 SpriteRenderer:
@@ -19964,7 +19965,7 @@ SpriteRenderer:
   m_SortingLayerID: 2033392199
   m_SortingLayer: -1
   m_SortingOrder: 2
-  m_Sprite: {fileID: -6405091691956346833, guid: 29b8265b6d7b48f46a438ce7dec04f7d, type: 3}
+  m_Sprite: {fileID: -8686292548640262590, guid: 29b8265b6d7b48f46a438ce7dec04f7d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -40594,8 +40595,8 @@ GameObject:
   - component: {fileID: 1800772932}
   - component: {fileID: 1800772931}
   m_Layer: 0
-  m_Name: Pellet (23)
-  m_TagString: Pellet
+  m_Name: Power Pellet
+  m_TagString: Power Pellet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -40659,7 +40660,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.35, y: 0.35}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!212 &1800772932
 SpriteRenderer:
@@ -40705,7 +40706,7 @@ SpriteRenderer:
   m_SortingLayerID: 2033392199
   m_SortingLayer: -1
   m_SortingOrder: 2
-  m_Sprite: {fileID: -6405091691956346833, guid: 29b8265b6d7b48f46a438ce7dec04f7d, type: 3}
+  m_Sprite: {fileID: -8686292548640262590, guid: 29b8265b6d7b48f46a438ce7dec04f7d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
