@@ -6,7 +6,6 @@ public class Pacman : MonoBehaviour, IDamageable
     public Vector2 TargetDirection { get; private set; }
     public Vector2 Direction { get; private set; }
     private Vector2 targetPosition;
-    public LayerMask wallLayer;
     public float speed;
     private bool canMove;
     private Movement movement;
@@ -20,8 +19,7 @@ public class Pacman : MonoBehaviour, IDamageable
     public static event PlayerEvent OnAggroEnter;
     private int score;
     private int totalPellets;
-    public Vector2 teleportA = new Vector2(-14, 3);
-    public Vector2 teleportB = new Vector2(15, 3);
+    public GridSettings gridSettings;
 
     private void Awake() {
         movement = new Movement(speed);
@@ -59,18 +57,18 @@ public class Pacman : MonoBehaviour, IDamageable
         }
 
         if (canMove == false) {
-            if ((Vector2)transform.position + Direction == teleportA) {
-                transform.position = teleportB;
-            } else if ((Vector2)transform.position + Direction == teleportB) {
-                transform.position = teleportA;
+            if ((Vector2)transform.position + Direction == gridSettings.TeleportA) {
+                transform.position = gridSettings.TeleportB;
+            } else if ((Vector2)transform.position + Direction == gridSettings.TeleportB) {
+                transform.position = gridSettings.TeleportA;
             }
 
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, TargetDirection, .55f, wallLayer);
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, TargetDirection, .55f, gridSettings.WallLayer);
 
             if (hit.collider == null) {
                 Direction = TargetDirection;
             } else {
-                hit = Physics2D.Raycast(transform.position, Direction, .55f, wallLayer);
+                hit = Physics2D.Raycast(transform.position, Direction, .55f, gridSettings.WallLayer);
                 if (hit.collider != null) {
                     Direction = Vector2.zero;
                 }

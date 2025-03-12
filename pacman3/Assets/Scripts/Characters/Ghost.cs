@@ -1,37 +1,35 @@
 using UnityEngine;
 using System.Collections;
 using CustomVariables;
-using UnityEditor.Experimental.GraphView;
 
 public class Ghost : MonoBehaviour, IDamageable
 {
-    Vector2 initPos = new Vector2(0,3);
-    public GhostState CurrentState;
-    public float speed;
+    private GhostState CurrentState;
     protected Movement movement;
     protected Pathfinding pathfinding;
-    public LayerMask wallLayer, allLayers;
-    protected bool canMove;
     protected Pacman player;
-    protected Vector2 targetPosition;
-    public Vector2 targetDirection;
-    public Vector2 startingDirection;
-    protected bool run;
-    protected Vector2 spawnPosition;
+    
+    //public LayerMask gridSettings.WallLayer, gridSettings.AllBlockingLayers;
     public Transform pointer;
-    public Vector2 homePosition;
+    
+    protected bool active;
+    protected bool canMove;
+    protected bool run;
     protected bool forceChase;
+    
+    [SerializeField] private float speed;
 
-    private Vector2 teleportA = new Vector2(-14, 0);
-    private Vector2 teleportB = new Vector2(15, 0);
+    protected Vector2 homePosition;
+    protected Vector2 targetDirection;
+    protected Vector2 startingDirection;
+    protected Vector2 targetPosition;
+    protected Vector2 spawnPosition;
     private Vector2 startPosition = new Vector2(0, 3);
-    private Vector2 slowZoneA = new Vector2(-8,0);
-    private Vector2 slowZoneB = new Vector2(9,0);
-    public bool active;
+    public GridSettings gridSettings;
 
     private void Awake() {
         movement = new Movement(speed);
-        pathfinding = new Pathfinding(transform, wallLayer, allLayers);
+        pathfinding = new Pathfinding(transform, gridSettings.WallLayer, gridSettings.AllBlockingLayers);
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Pacman>();
     }
 
@@ -47,9 +45,11 @@ public class Ghost : MonoBehaviour, IDamageable
         Pacman.OnPlayerWin -= Stop;
     }
 
-    private void Start() {
+    protected virtual void Start() {
         spawnPosition = transform.position;
         StartCoroutine(DelayStart());
+        Debug.Log(name + ", " + CurrentState);
+
     }
 
     private void Update() {
@@ -57,20 +57,20 @@ public class Ghost : MonoBehaviour, IDamageable
             return;
         }
 
-        if ((Vector2)transform.position + targetDirection == teleportA) {
-            transform.position = teleportB;
+        if ((Vector2)transform.position + targetDirection == gridSettings.TeleportA) {
+            transform.position = gridSettings.TeleportB;
             canMove = false;
         }
-        else if ((Vector2)transform.position + targetDirection == teleportB) {
-            transform.position = teleportA;
+        else if ((Vector2)transform.position + targetDirection == gridSettings.TeleportB) {
+            transform.position = gridSettings.TeleportA;
             canMove = false;
         }
-        else if ((Vector2)transform.position == slowZoneA && targetDirection == Vector2.left
-                || (Vector2)transform.position == slowZoneB && targetDirection == Vector2.right) {
+        else if ((Vector2)transform.position == gridSettings.SlowZoneA && targetDirection == Vector2.left
+                || (Vector2)transform.position == gridSettings.SlowZoneB && targetDirection == Vector2.right) {
             UpdateSpeed(5);
         }
-        else if ((Vector2)transform.position == slowZoneA && targetDirection == Vector2.right
-                || (Vector2)transform.position == slowZoneB && targetDirection == Vector2.left) {
+        else if ((Vector2)transform.position == gridSettings.SlowZoneA && targetDirection == Vector2.right
+                || (Vector2)transform.position == gridSettings.SlowZoneB && targetDirection == Vector2.left) {
             if (forceChase) {
                 UpdateSpeed(8);
             }
@@ -113,74 +113,11 @@ public class Ghost : MonoBehaviour, IDamageable
                 FrightenedUpdate();
                 break;
         }
-
-        return;
-
-        // --- //
-
-        if (canMove) {
-            canMove = movement.Move(transform, targetPosition);
-        } else {
-            if (CurrentState == GhostState.Scatter) {
-                targetPosition = homePosition;
-                pointer.position = targetPosition;
-                targetDirection = pathfinding.GetShortestDirection(targetPosition, targetDirection);
-                targetPosition = (Vector2)transform.position + targetDirection;
-                canMove = true;
-            } else {
-                if (CurrentState == GhostState.Disable) {
-                    if (active && ((Vector2)transform.position != startPosition)) {
-                        targetPosition = startPosition;
-                        pointer.position = targetPosition;
-                        targetDirection = pathfinding.GetShortestDirectionIgnore(targetPosition, targetDirection);
-                        targetPosition = (Vector2)transform.position + targetDirection;
-                        canMove = true;
-                    } else if (active && ((Vector2)transform.position == startPosition)) {
-                        if (startPosition == Vector2.zero) {
-                            startPosition = new Vector2(0, 3);
-                        }
-                        else {
-                            SetState(GhostState.Chase);
-                            if (forceChase) {
-                                movement.SetMoveSpeed(8);
-                            }
-                            else {
-                                movement.SetMoveSpeed(7);
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 
-    private void UpdateSpeed(float value) {
+    protected void UpdateSpeed(float value) {
         speed = value;
         movement.SetMoveSpeed(speed);
-    }
-
-    private void InitUpdate() {
-        if ((Vector2)transform.position == initPos) {
-            SetState(GhostState.Chase);
-            return;
-        }
-
-        targetPosition = initPos;
-        targetDirection = pathfinding.GetShortestDirectionIgnore(targetPosition, targetDirection);
-        targetPosition = (Vector2)transform.position + targetDirection;
-        canMove = true;
-    }
-
-    private void IdleUpdate() {
-        if ((Vector2)transform.position == spawnPosition + Vector2.up) {
-            targetDirection = Vector2.down;
-        } 
-        else if ((Vector2)transform.position == spawnPosition + Vector2.down) {
-            targetDirection = Vector2.up;
-        }
-
-        targetPosition = (Vector2)transform.position + targetDirection;
-        canMove = true;
     }
 
     public void Death(string attacker) {
