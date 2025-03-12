@@ -134,7 +134,6 @@ public class Ghost : MonoBehaviour, IDamageable
 
     public void Death(string attacker) {
         if (attacker == "Player") {
-            Debug.Log(name + " has been killed");
             GetComponentInChildren<SpriteRenderer>().color = eatenColor;
             SetState(GhostState.Eaten);
             UpdateSpeed(15);

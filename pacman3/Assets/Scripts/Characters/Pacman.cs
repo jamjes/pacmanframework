@@ -19,8 +19,12 @@ public class Pacman : MonoBehaviour, IDamageable
     public static event PlayerEvent OnPlayerWin;
     public static event PlayerEvent OnAggroEnter;
     public static event PlayerEvent OnPowerPellet;
+    public delegate void UIEvent(float value);
+    public static event UIEvent OnScoreUpdate;
     private int totalPellets;
     public GridSettings gridSettings;
+
+    int scoreMultiplier = 1;
 
     private void Awake() {
         movement = new Movement(speed);
@@ -118,11 +122,14 @@ public class Pacman : MonoBehaviour, IDamageable
             }
             else {
                 score += 50;
+                scoreMultiplier = 1;
                 if (OnPowerPellet != null) {
                     OnPowerPellet();
                 }
             }
-
+            if (OnScoreUpdate != null) {
+                OnScoreUpdate(score);
+            }
             totalPellets--;
             Destroy(collision.gameObject);
             if (totalPellets == 0) {
@@ -142,6 +149,8 @@ public class Pacman : MonoBehaviour, IDamageable
                 IDamageable damageableObject = collision.GetComponent<IDamageable>();
                 if (damageableObject != null) {
                     damageableObject.Death(gameObject.tag);
+                    score += (200 * scoreMultiplier);
+                    scoreMultiplier *= 2;
                 }
             }
         }
