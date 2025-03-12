@@ -1,11 +1,10 @@
 using UnityEngine;
 using System.Collections;
 using CustomVariables;
-using Unity.VisualScripting;
 
 public class Ghost : MonoBehaviour, IDamageable
 {
-    private Color baseColor, frightenedColor = Color.blue;
+    private Color baseColor, frightenedColor = Color.blue, eatenColor = Color.gray;
 
     public GhostState CurrentState { get; private set; }
     private GhostState? SuperState = null;
@@ -13,7 +12,10 @@ public class Ghost : MonoBehaviour, IDamageable
     protected Pathfinding pathfinding;
     protected Pacman player;
     public Transform pointer;
-    
+
+    private bool frightenedCountdown;
+    private float frightenedDuration = 7;
+
     protected bool active;
     protected bool canMove;
     protected bool run;
@@ -83,12 +85,18 @@ public class Ghost : MonoBehaviour, IDamageable
             }
         }
 
-        RaycastHit2D[] hitAll = Physics2D.RaycastAll(transform.position, targetDirection, .55f);
-        foreach (RaycastHit2D hit in hitAll) {
-            IDamageable damageableObject = hit.collider.GetComponent<IDamageable>();
-            if (damageableObject != null) {
-                damageableObject.Death(gameObject.tag);
+        if (CurrentState != GhostState.Frightened && CurrentState != GhostState.Eaten) {
+            RaycastHit2D[] hitAll = Physics2D.RaycastAll(transform.position, targetDirection, .55f);
+            foreach (RaycastHit2D hit in hitAll) {
+                IDamageable damageableObject = hit.collider.GetComponent<IDamageable>();
+                if (damageableObject != null) {
+                    damageableObject.Death(gameObject.tag);
+                }
             }
+        }
+
+        if (frightenedCountdown) {
+            PowerPelletCountdown();
         }
 
         if (canMove) {
@@ -127,6 +135,9 @@ public class Ghost : MonoBehaviour, IDamageable
     public void Death(string attacker) {
         if (attacker == "Player") {
             Debug.Log(name + " has been killed");
+            GetComponentInChildren<SpriteRenderer>().color = eatenColor;
+            SetState(GhostState.Eaten);
+            UpdateSpeed(15);
         }
     }
 
@@ -236,24 +247,48 @@ public class Ghost : MonoBehaviour, IDamageable
     }
 
     private void EatenUpdate() {
-        Debug.Log("CurrentState = Eaten");
+        if ((Vector2)transform.position == Vector2.zero) {
+            SetState(GhostState.Disable);
+            UpdateSpeed(5);
+            GetComponentInChildren<SpriteRenderer>().color = baseColor;
+            SuperState = null;
+            return;
+        }
+        
+        targetPosition = Vector2.zero;
+        targetDirection = pathfinding.GetShortestDirectionIgnore(targetPosition, targetDirection);
+        targetPosition = (Vector2)transform.position + targetDirection;
+        canMove = true;
     }
 
     private void PowerPelletEvent() {
-        StartCoroutine(PowerPelletDuration());
+        UpdateSpeed(5);
+        GetComponentInChildren<SpriteRenderer>().color = frightenedColor;
         SuperState = GhostState.Frightened;
         if (CurrentState == GhostState.Chase || CurrentState == GhostState.Scatter) {
             SetState(GhostState.Frightened);
         }
+        frightenedCountdown = true;
+        frightenedDuration = 7;
     }
 
-    private IEnumerator PowerPelletDuration() {
-        GetComponentInChildren<SpriteRenderer>().color = frightenedColor;
-        yield return new WaitForSeconds(7);
-        SuperState = null;
-        if (CurrentState == GhostState.Frightened) {
-            CurrentState = GhostState.Chase;
+    private void PowerPelletCountdown() {
+        if (frightenedDuration <= 0) {
+            frightenedCountdown = false;
+            SuperState = null;
+            if (CurrentState == GhostState.Frightened) {
+                CurrentState = GhostState.Chase;
+            }
+            GetComponentInChildren<SpriteRenderer>().color = baseColor;
+            if (forceChase) {
+                UpdateSpeed(8);
+            }
+            else {
+                UpdateSpeed(7);
+            }
         }
-        GetComponentInChildren<SpriteRenderer>().color = baseColor;
+        else {
+            frightenedDuration -= Time.deltaTime;
+        }
     }
 }

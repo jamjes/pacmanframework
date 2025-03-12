@@ -137,37 +137,11 @@ public class Pacman : MonoBehaviour, IDamageable
                 }
             }
         }
-
-        return;
-        
-        if (collision.tag == "Pellet") {
-            score+=10;
-            totalPellets--;
-            Destroy(collision.gameObject);
-            if (totalPellets == 0) {
-                run = false;
-                if (OnPlayerWin != null) {
-                    OnPlayerWin();
-                }
-            } else if (totalPellets == 20) {
-                if (OnAggroEnter != null) {
-                    OnAggroEnter();
-                }
-            }
-        } else if (collision.tag == "Power Pellet") {
-            score += 50;
-            totalPellets--;
-            Destroy(collision.gameObject);
-            if (totalPellets == 0) {
-                run = false;
-                if (OnPlayerWin != null) {
-                    OnPlayerWin();
-                }
-            }
-            else if (totalPellets == 20) {
-                Debug.Log("Aggro Mode Trigger");
-                if (OnAggroEnter != null) {
-                    OnAggroEnter();
+        else if (collision.tag == "Ghost") {
+            if (collision.GetComponent<Ghost>().CurrentState == CustomVariables.GhostState.Frightened) {
+                IDamageable damageableObject = collision.GetComponent<IDamageable>();
+                if (damageableObject != null) {
+                    damageableObject.Death(gameObject.tag);
                 }
             }
         }

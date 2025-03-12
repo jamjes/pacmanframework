@@ -14523,6 +14523,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pointer: {fileID: 244160406}
   speed: 7
+  targetDirection: {x: 0, y: 0}
   gridSettings: {fileID: 1628503425}
   Blinky: {fileID: 1500232747}
 --- !u!1 &849506971
@@ -17476,6 +17477,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pointer: {fileID: 1997720497}
   speed: 7
+  targetDirection: {x: 0, y: 0}
   gridSettings: {fileID: 1628503425}
 --- !u!1 &1010255461
 GameObject:
@@ -23223,6 +23225,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pointer: {fileID: 411761}
   speed: 7
+  targetDirection: {x: 0, y: 0}
   gridSettings: {fileID: 1628503425}
 --- !u!1 &1327198210
 GameObject:
@@ -25294,6 +25297,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pointer: {fileID: 2087058931}
   speed: 7
+  targetDirection: {x: 0, y: 0}
   gridSettings: {fileID: 1628503425}
 --- !u!1 &1501239329
 GameObject:

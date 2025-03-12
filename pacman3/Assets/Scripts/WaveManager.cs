@@ -49,7 +49,7 @@ public class WaveManager : MonoBehaviour
         if (stateIndex != stateTimes.Length) {
             if (Mathf.Floor(elapsedTime) == stateTimes[stateIndex]) {
                 foreach (Ghost ghost in ghosts) {
-                    if (ghost.CurrentState == GhostState.Frightened) {
+                    if (ghost.CurrentState == GhostState.Frightened || ghost.CurrentState == GhostState.Eaten) {
                         break;
                     }
 
