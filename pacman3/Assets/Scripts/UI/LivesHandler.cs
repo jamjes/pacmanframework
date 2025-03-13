@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,6 +20,11 @@ public class LivesHandler : MonoBehaviour
     }
 
     private void DecrementLives() {
+        StartCoroutine(DecrementAfterDelay());
+    }
+
+    private IEnumerator DecrementAfterDelay() {
+        yield return new WaitForSeconds(3);
         lives[pointer].enabled = false;
         pointer--;
     }

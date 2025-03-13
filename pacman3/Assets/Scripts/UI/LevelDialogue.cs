@@ -11,13 +11,13 @@ public class LevelDialogue : MonoBehaviour
     }
 
     private void OnEnable() {
-        Pacman.OnPlayerDamage += Trigger;
-        Pacman.OnPlayerDeath += DisplayEndText;
+        Pacman.OnPlayerDamage += TriggerAfterRespawn;
+        Pacman.OnPlayerDeath += TriggerAfterDeath;
     }
 
     private void OnDisable() {
-        Pacman.OnPlayerDamage -= Trigger;
-        Pacman.OnPlayerDeath -= DisplayEndText;
+        Pacman.OnPlayerDamage -= TriggerAfterRespawn;
+        Pacman.OnPlayerDeath -= TriggerAfterDeath;
     }
 
     private IEnumerator DisplayStartText() {
@@ -26,11 +26,23 @@ public class LevelDialogue : MonoBehaviour
         startText.SetActive(false);
     }
 
-    private void Trigger() {
-        StartCoroutine(DisplayStartText());
+    private IEnumerator DisplayStartTextAfterRespawn() {
+        yield return new WaitForSeconds(3f);
+        startText.SetActive(true);
+        yield return new WaitForSeconds(3f);
+        startText.SetActive(false);
     }
 
-    private void DisplayEndText() {
+    private void TriggerAfterRespawn() {
+        StartCoroutine(DisplayStartTextAfterRespawn());
+    }
+
+    private void TriggerAfterDeath() {
+        StartCoroutine(DisplayEndText());
+    }
+
+    private IEnumerator DisplayEndText() {
+        yield return new WaitForSeconds(3);
         deathText.SetActive(true);
     }
 }

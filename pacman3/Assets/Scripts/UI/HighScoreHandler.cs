@@ -20,7 +20,8 @@ public class HighScoreHandler : MonoBehaviour
     }
 
     private void Start() {
-        this.score.text = PlayerPrefs.GetInt("HighScore").ToString("0000");
+        string text = $"HIGH SCORE \n{PlayerPrefs.GetInt("HighScore").ToString("0000")}";
+        this.score.text = text;
     }
 
     private void UpdateScore(float currentScore) {
@@ -31,6 +32,7 @@ public class HighScoreHandler : MonoBehaviour
 
     private void SetHighScore(int value) {
         PlayerPrefs.SetInt("HighScore", value);
-        this.score.text = PlayerPrefs.GetInt("HighScore").ToString("0000");
+        string text = $"HIGH SCORE \n{PlayerPrefs.GetInt("HighScore").ToString("0000")}";
+        this.score.text = text;
     }
 }

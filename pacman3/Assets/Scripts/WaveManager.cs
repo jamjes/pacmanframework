@@ -72,11 +72,16 @@ public class WaveManager : MonoBehaviour
         stateIndex = 0;
         elapsedTime = 0;
         run = false;
-        StartCoroutine(DelayStart());
+        StartCoroutine(DelayRestartStart());
     }
 
     private IEnumerator DelayStart() {
         yield return new WaitForSeconds(3);
+        run = true;
+    }
+
+    private IEnumerator DelayRestartStart() {
+        yield return new WaitForSeconds(6);
         run = true;
     }
 

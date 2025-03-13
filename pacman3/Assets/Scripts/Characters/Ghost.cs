@@ -4,7 +4,7 @@ using CustomVariables;
 
 public class Ghost : MonoBehaviour, IDamageable
 {
-    private Color baseColor, frightenedColor = Color.blue, eatenColor = Color.gray;
+    //private Color baseColor, frightenedColor = Color.blue, eatenColor = Color.gray;
 
     public GhostState CurrentState { get; private set; }
     private GhostState? SuperState = null;
@@ -39,14 +39,14 @@ public class Ghost : MonoBehaviour, IDamageable
     }
 
     protected virtual void OnEnable() {
-        Pacman.OnPlayerDamage += ResetObject;
+        Pacman.OnPlayerDamage += OnPlayerDamage;
         Pacman.OnPlayerDeath += Stop;
         Pacman.OnPlayerWin += Stop;
         Pacman.OnPowerPellet += PowerPelletEvent;
     }
 
     protected virtual void OnDisable() {
-        Pacman.OnPlayerDamage -= ResetObject;
+        Pacman.OnPlayerDamage -= OnPlayerDamage;
         Pacman.OnPlayerDeath -= Stop;
         Pacman.OnPlayerWin -= Stop;
         Pacman.OnPowerPellet -= PowerPelletEvent;
@@ -54,7 +54,7 @@ public class Ghost : MonoBehaviour, IDamageable
 
     protected virtual void Start() {
         spawnPosition = transform.position;
-        baseColor = GetComponentInChildren<SpriteRenderer>().color;
+        //baseColor = GetComponentInChildren<SpriteRenderer>().color;
         StartCoroutine(DelayStart());
     }
 
@@ -88,9 +88,8 @@ public class Ghost : MonoBehaviour, IDamageable
         if (CurrentState != GhostState.Frightened && CurrentState != GhostState.Eaten) {
             RaycastHit2D[] hitAll = Physics2D.RaycastAll(transform.position, targetDirection, .55f);
             foreach (RaycastHit2D hit in hitAll) {
-                IDamageable damageableObject = hit.collider.GetComponent<IDamageable>();
-                if (damageableObject != null) {
-                    damageableObject.Death(gameObject.tag);
+                if (hit.collider.tag == "Player") {
+                    hit.collider.GetComponent<IDamageable>().Death(gameObject.tag);
                 }
             }
         }
@@ -134,14 +133,46 @@ public class Ghost : MonoBehaviour, IDamageable
 
     public void Death(string attacker) {
         if (attacker == "Player") {
-            GetComponentInChildren<SpriteRenderer>().color = eatenColor;
+            //GetComponentInChildren<SpriteRenderer>().color = eatenColor;
             SetState(GhostState.Eaten);
             UpdateSpeed(15);
         }
     }
 
+    private void OnPlayerDamage() {
+        run = false;
+        StartCoroutine(DelayedRestartAfterPlayerDeath());
+    }
+
+    private IEnumerator DelayedRestartAfterPlayerDeath() {
+        yield return new WaitForSeconds(3);
+        canMove = false;
+        transform.position = spawnPosition;
+        if (spawnPosition != startPosition) {
+            SetState(GhostState.Disable);
+            active = false;
+        }
+        else {
+            SetState(GhostState.Scatter);
+            active = true;
+        }
+        UpdateSpeed(7);
+        yield return new WaitForSeconds(3);
+        run = true;
+    }
+
     private void ResetObject() {
         Stop();
+    }
+
+    private void Stop() {
+        run = false;
+        canMove = false;
+        targetDirection = Vector2.zero;
+    }
+
+    private IEnumerator DelayedRestart() {
+        yield return new WaitForSeconds(3);
         transform.position = spawnPosition;
         if (spawnPosition != startPosition) {
             SetState(GhostState.Disable);
@@ -153,12 +184,6 @@ public class Ghost : MonoBehaviour, IDamageable
         }
         UpdateSpeed(7);
         StartCoroutine(DelayStart());
-    }
-
-    private void Stop() {
-        run = false;
-        canMove = false;
-        targetDirection = Vector2.zero;
     }
 
     private IEnumerator DelayStart() {
@@ -249,7 +274,7 @@ public class Ghost : MonoBehaviour, IDamageable
         if ((Vector2)transform.position == Vector2.zero) {
             SetState(GhostState.Disable);
             UpdateSpeed(5);
-            GetComponentInChildren<SpriteRenderer>().color = baseColor;
+            //GetComponentInChildren<SpriteRenderer>().color = baseColor;
             SuperState = null;
             return;
         }
@@ -262,7 +287,7 @@ public class Ghost : MonoBehaviour, IDamageable
 
     private void PowerPelletEvent() {
         UpdateSpeed(5);
-        GetComponentInChildren<SpriteRenderer>().color = frightenedColor;
+        //GetComponentInChildren<SpriteRenderer>().color = frightenedColor;
         SuperState = GhostState.Frightened;
         if (CurrentState == GhostState.Chase || CurrentState == GhostState.Scatter) {
             SetState(GhostState.Frightened);
@@ -278,7 +303,7 @@ public class Ghost : MonoBehaviour, IDamageable
             if (CurrentState == GhostState.Frightened) {
                 CurrentState = GhostState.Chase;
             }
-            GetComponentInChildren<SpriteRenderer>().color = baseColor;
+            //GetComponentInChildren<SpriteRenderer>().color = baseColor;
             if (forceChase) {
                 UpdateSpeed(8);
             }

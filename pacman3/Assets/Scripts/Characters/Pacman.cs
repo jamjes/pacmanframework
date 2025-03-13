@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Pacman : MonoBehaviour, IDamageable
@@ -68,12 +69,12 @@ public class Pacman : MonoBehaviour, IDamageable
                 transform.position = gridSettings.TeleportA;
             }
 
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, TargetDirection, .55f, gridSettings.WallLayer);
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, TargetDirection, .55f, gridSettings.AllBlockingLayers);
 
             if (hit.collider == null) {
                 Direction = TargetDirection;
             } else {
-                hit = Physics2D.Raycast(transform.position, Direction, .55f, gridSettings.WallLayer);
+                hit = Physics2D.Raycast(transform.position, Direction, .55f, gridSettings.AllBlockingLayers);
                 if (hit.collider != null) {
                     Direction = Vector2.zero;
                 }
@@ -91,28 +92,52 @@ public class Pacman : MonoBehaviour, IDamageable
     }
 
     public void Death(string attacker) {
-        if (attacker == "Ghost") {
-            lives--;
+        if (attacker == "Ghost" && run == true) {
             run = false;
-            canMove = false;
-            if (lives > 0) {
-                if (OnPlayerDamage != null) {
-                    transform.position = spawnPosition;
-                    OnPlayerDamage();
-                    StartCoroutine(DelayStart());
-                }
-            } else {
+            lives--;
+            Direction = Vector2.zero;
+            TargetDirection = Vector2.zero;
+            if (lives == 0) {
                 if (OnPlayerDeath != null) {
                     OnPlayerDeath();
                 }
+            } else {
+                if (OnPlayerDamage != null) {
+                    OnPlayerDamage();
+                }
+                StartCoroutine(ResetAfterDelay());
             }
-            
         }
+    }
+
+    private IEnumerator ResetAfterDelay() {
+        yield return new WaitForSeconds(3f);
+        TargetDirection = Vector2.left;
+        transform.position = spawnPosition;
+        canMove = false;
+        yield return new WaitForSeconds(3f);
+        run = true;
     }
 
     private IEnumerator DelayStart() {
         yield return new WaitForSeconds(3);
         run = true;
+    }
+
+    private IEnumerator DamageDelay() {
+        yield return new WaitForSeconds(3);
+        if (lives > 0) {
+            if (OnPlayerDamage != null) {
+                OnPlayerDamage();
+            }
+            transform.position = spawnPosition;
+            StartCoroutine(DelayStart());
+        }
+        else {
+            if (OnPlayerDeath != null) {
+                OnPlayerDeath();
+            }
+        }
     }
 
     private void CollisionCheck(Collider2D collision) {
