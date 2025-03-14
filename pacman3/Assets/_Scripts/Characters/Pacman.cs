@@ -11,7 +11,7 @@ public class Pacman : MonoBehaviour, IDamageable
     [SerializeField] private int score;
     private bool canMove;
     private Movement movement;
-    private bool run;
+    public bool run;
     private Vector2 spawnPosition;
     private int lives = 3;
     public delegate void PlayerEvent();
@@ -120,7 +120,7 @@ public class Pacman : MonoBehaviour, IDamageable
     }
 
     private IEnumerator DelayStart() {
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(6);
         run = true;
     }
 

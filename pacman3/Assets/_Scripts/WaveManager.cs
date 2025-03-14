@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 public class WaveManager : MonoBehaviour
 {
     public Ghost[] ghosts;
-    private bool run = false;
+    public bool run = false;
     
     private float[] spawnTimes = {8, 16, 24 };
     private int ghostIndex;
@@ -76,7 +76,7 @@ public class WaveManager : MonoBehaviour
     }
 
     private IEnumerator DelayStart() {
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(6);
         run = true;
     }
 

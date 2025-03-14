@@ -102,7 +102,7 @@ public class GhostAnimator : MonoBehaviour
     }
 
     private IEnumerator StartDelay() {
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(6);
         anim.speed = 1;
         run = true;
     }

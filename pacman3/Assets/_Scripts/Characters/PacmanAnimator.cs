@@ -67,7 +67,7 @@ public class PacmanAnimator : MonoBehaviour
         superState = true;
         anim.CrossFade(IdleHash, 0, 0);
         anim.speed = 1;
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(6);
         superState = false;
     }
 

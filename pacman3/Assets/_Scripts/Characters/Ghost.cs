@@ -5,7 +5,6 @@ using CustomVariables;
 public class Ghost : MonoBehaviour, IDamageable
 {
     //private Color baseColor, frightenedColor = Color.blue, eatenColor = Color.gray;
-
     public GhostState CurrentState { get; private set; }
     private GhostState? SuperState = null;
     protected Movement movement;
@@ -31,6 +30,9 @@ public class Ghost : MonoBehaviour, IDamageable
     protected Vector2 spawnPosition;
     private Vector2 startPosition = new Vector2(0, 3);
     public GridSettings gridSettings;
+
+    public delegate void GhostEvent();
+    public static event GhostEvent OnGhostDeath;
 
     private void Awake() {
         movement = new Movement(speed);
@@ -134,6 +136,9 @@ public class Ghost : MonoBehaviour, IDamageable
     public void Death(string attacker) {
         if (attacker == "Player") {
             //GetComponentInChildren<SpriteRenderer>().color = eatenColor;
+            if (OnGhostDeath != null) {
+                OnGhostDeath();
+            }
             SetState(GhostState.Eaten);
             UpdateSpeed(15);
         }
@@ -188,7 +193,7 @@ public class Ghost : MonoBehaviour, IDamageable
     }
 
     private IEnumerator DelayStart() {
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(6);
         run = true;
     }
 
