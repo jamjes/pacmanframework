@@ -148,6 +148,7 @@ public class Ghost : MonoBehaviour, IDamageable
         yield return new WaitForSeconds(3);
         canMove = false;
         transform.position = spawnPosition;
+        targetDirection = Vector2.zero;
         if (spawnPosition != startPosition) {
             SetState(GhostState.Disable);
             active = false;

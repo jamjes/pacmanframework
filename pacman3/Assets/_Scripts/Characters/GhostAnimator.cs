@@ -30,11 +30,13 @@ public class GhostAnimator : MonoBehaviour
     private void OnEnable() {
         Pacman.OnPlayerDamage += DisableAnimation;
         Pacman.OnPlayerDeath += PlayerLose;
+        Pacman.OnPlayerWin += PlayerLose;
     }
 
     private void OnDisable() {
         Pacman.OnPlayerDeath -= PlayerLose;
         Pacman.OnPlayerDamage -= DisableAnimation;
+        Pacman.OnPlayerWin -= PlayerLose;
     }
 
     private void Update() {

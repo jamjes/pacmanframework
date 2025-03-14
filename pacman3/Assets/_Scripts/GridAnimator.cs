@@ -22,7 +22,7 @@ public class GridAnimator : MonoBehaviour
     }
 
     private IEnumerator Animate() {
-        yield return new WaitForSeconds(.2f);
+        yield return new WaitForSeconds(1.2f);
         overlayGrid.SetActive(true);
         yield return new WaitForSeconds(.2f);
         overlayGrid.SetActive(false);
